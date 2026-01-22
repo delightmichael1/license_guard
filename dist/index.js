@@ -1729,7 +1729,7 @@ function Maintenance({ appName, message }) {
 
 // src/utils/constants.ts
 var OFFLINE_GRACE_PERIOD = 1e3 * 60 * 60 * 24;
-var DEFAULT_API_ENDPOINT = "http://localhost:8000/v1/app/validate";
+var DEFAULT_API_ENDPOINT = "";
 
 // src/utils/api.ts
 async function validateApp(appId, apiEndpoint) {
@@ -1772,6 +1772,38 @@ function deleteValidationCookie(name) {
     expires: /* @__PURE__ */ new Date(0)
   });
 }
+var loadingStyles = {
+  container: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    minHeight: "100vh",
+    background: "linear-gradient(135deg, #eef2ff 0%, #ffffff 50%, #faf5ff 100%)"
+  },
+  spinner: {
+    width: "3rem",
+    height: "3rem",
+    border: "3px solid transparent",
+    borderTop: "3px solid #4f46e5",
+    borderBottom: "3px solid #4f46e5",
+    borderRadius: "50%",
+    animation: "spin 1s linear infinite"
+  }
+};
+if (typeof document !== "undefined") {
+  const existingStyle = document.getElementById("app-validator-styles");
+  if (!existingStyle) {
+    const styleSheet = document.createElement("style");
+    styleSheet.id = "app-validator-styles";
+    styleSheet.textContent = `
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    `;
+    document.head.appendChild(styleSheet);
+  }
+}
 function AppValidator({
   appId,
   appName,
@@ -1782,7 +1814,7 @@ function AppValidator({
     "LOADING"
   );
   const [message, setMessage] = react.useState();
-  const COOKIE_NAME = "X-APP-V";
+  const COOKIE_NAME = "__X-APP-V__";
   const COOKIE_LIFETIME_HOURS = 24;
   react.useEffect(() => {
     async function checkApp() {
@@ -1813,7 +1845,8 @@ function AppValidator({
     }
     checkApp();
   }, [appId, apiEndpoint]);
-  if (status === "LOADING") return /* @__PURE__ */ jsxRuntime.jsx("div", { children: "Loading..." });
+  if (status === "LOADING")
+    return /* @__PURE__ */ jsxRuntime.jsx("div", { style: loadingStyles.container, children: /* @__PURE__ */ jsxRuntime.jsx("div", { style: loadingStyles.spinner }) });
   if (status === "MAINTENANCE")
     return /* @__PURE__ */ jsxRuntime.jsx(Maintenance, { appName, message });
   return /* @__PURE__ */ jsxRuntime.jsx(jsxRuntime.Fragment, { children });

@@ -15,17 +15,17 @@ A React component library for managing application validation and maintenance mo
 ## Installation
 
 ```bash
-npm install app-validator
+npm install @deldev/license_guard
 # or
-yarn add app-validator
+yarn add @deldev/license_guard
 # or
-pnpm add app-validator
+pnpm add @deldev/license_guard
 ```
 
 ## Quick Start
 
 ```tsx
-import { AppValidator } from "app-validator";
+import { AppValidator } from "@deldev/license_guard";
 
 function App() {
   return (
@@ -80,7 +80,7 @@ interface ValidationResponse {
 
 ```tsx
 // app/layout.tsx
-import { AppValidator } from "app-validator";
+import { AppValidator } from "@deldev/license_guard";
 
 export default function RootLayout({
   children,
@@ -103,7 +103,7 @@ export default function RootLayout({
 
 ```tsx
 // pages/_app.tsx
-import { AppValidator } from "app-validator";
+import { AppValidator } from "@deldev/license_guard";
 import type { AppProps } from "next/app";
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -121,7 +121,7 @@ export default function App({ Component, pageProps }: AppProps) {
 // src/index.tsx
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { AppValidator } from "app-validator";
+import { AppValidator } from "@deldev/license_guard";
 import App from "./App";
 
 const root = ReactDOM.createRoot(
@@ -143,7 +143,7 @@ root.render(
 // src/main.tsx
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { AppValidator } from "app-validator";
+import { AppValidator } from "@deldev/license_guard";
 import App from "./App";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
@@ -159,7 +159,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 
 ```tsx
 // app/root.tsx
-import { AppValidator } from "app-validator";
+import { AppValidator } from "@deldev/license_guard";
 import {
   Links,
   LiveReload,
@@ -194,7 +194,7 @@ export default function App() {
 ```tsx
 // gatsby-browser.js or gatsby-ssr.js
 import React from "react";
-import { AppValidator } from "app-validator";
+import { AppValidator } from "@deldev/license_guard";
 
 export const wrapRootElement = ({ element }) => (
   <AppValidator appId="gatsby-app-123" appName="Gatsby Site">
@@ -208,7 +208,7 @@ export const wrapRootElement = ({ element }) => (
 ```astro
 ---
 // src/layouts/Layout.astro
-import { AppValidator } from 'app-validator';
+import { AppValidator } from '@deldev/license_guard';
 ---
 
 <!DOCTYPE html>
@@ -230,7 +230,7 @@ import { AppValidator } from 'app-validator';
 
 ```tsx
 // App.tsx
-import { AppValidator } from "app-validator";
+import { AppValidator } from "@deldev/license_guard";
 import { registerRootComponent } from "expo";
 
 function App() {
@@ -337,7 +337,7 @@ The component handles errors gracefully:
 Full TypeScript support with exported types:
 
 ```typescript
-import type { ValidationResponse } from "app-validator";
+import type { ValidationResponse } from "@deldev/license_guard";
 
 const response: ValidationResponse = {
   status: "OK",
