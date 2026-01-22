@@ -1,11 +1,18 @@
-import "./Maintenance.css";
+const styles = {
+  icon: {
+    width: "20rem",
+    height: "20rem",
+    color: "#4f46e5",
+  },
+};
 
 const SvgIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     xmlSpace="preserve"
     id="settings"
-    className="maintenance-icon"
+    style={styles.icon}
+    viewBox="0 0 900 900"
   >
     <linearGradient
       id="a"
