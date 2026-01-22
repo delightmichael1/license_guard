@@ -1713,10 +1713,12 @@ var DEFAULT_API_ENDPOINT = "http://localhost:8000/v1/app/validate";
 async function validateApp(appId, apiEndpoint) {
   const endpoint = apiEndpoint || DEFAULT_API_ENDPOINT;
   try {
-    const origin = typeof window !== "undefined" ? window.location.origin : "";
-    const res = await fetch(
-      `${endpoint}?appId=${appId}&origin=${encodeURIComponent(origin)}`
-    );
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "X-App-Id": appId
+      }
+    });
     if (!res.ok) {
       return { status: "MAINTENANCE", message: "Server error" };
     }
