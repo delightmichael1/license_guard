@@ -1,6 +1,6 @@
 {
-  "name": "license_guard",
-  "version": "1.0.0",
+  "name": "@deldev/license_guard",
+  "version": "1.0.1",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
