@@ -1,10 +1,19 @@
 import * as cookie from "cookie";
+import { decrypt, encrypt } from "./crypto";
 
-export function setValidationCookie(name: string, value: string, hours = 24) {
+export function setValidationCookie(
+  name: string,
+  value: string,
+  hours = 24,
+  appId: string,
+) {
   const expires = new Date();
   expires.setHours(expires.getHours() + hours);
 
-  document.cookie = cookie.serialize(name, value, {
+  // Encrypt the value using appId
+  const encryptedValue = encrypt(value, appId);
+
+  document.cookie = cookie.serialize(name, encryptedValue, {
     path: "/",
     expires,
     sameSite: "lax",
@@ -13,11 +22,18 @@ export function setValidationCookie(name: string, value: string, hours = 24) {
   });
 }
 
-export function getValidationCookie(name: string): string | null {
+export function getValidationCookie(
+  name: string,
+  appId: string,
+): string | null {
   if (typeof document === "undefined") return null;
 
   const cookies = cookie.parse(document.cookie || "");
-  return cookies[name] || null;
+  const encryptedValue = cookies[name];
+
+  if (!encryptedValue) return null;
+
+  return decrypt(encryptedValue, appId);
 }
 
 export function deleteValidationCookie(name: string) {

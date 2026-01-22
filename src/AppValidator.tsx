@@ -1,3 +1,4 @@
+// AppValidator.tsx (updated)
 "use client";
 import Maintenance from "./Maintenance";
 import { useEffect, useState } from "react";
@@ -63,7 +64,8 @@ export default function AppValidator({
 
   useEffect(() => {
     async function checkApp() {
-      const cached = getValidationCookie(COOKIE_NAME);
+      // Pass appId to decrypt the cookie value
+      const cached = getValidationCookie(COOKIE_NAME, appId);
 
       if (cached === "OK") {
         setStatus("OK");
@@ -75,7 +77,8 @@ export default function AppValidator({
       if (res.status === "OK") {
         setStatus("OK");
         setMessage(undefined);
-        setValidationCookie(COOKIE_NAME, "OK", COOKIE_LIFETIME_HOURS);
+        // Pass appId to encrypt the cookie value
+        setValidationCookie(COOKIE_NAME, "OK", COOKIE_LIFETIME_HOURS, appId);
       } else {
         if (cached === "OK") {
           setStatus("OK");
@@ -87,6 +90,7 @@ export default function AppValidator({
             COOKIE_NAME,
             "MAINTENANCE",
             COOKIE_LIFETIME_HOURS,
+            appId,
           );
         }
       }

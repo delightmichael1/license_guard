@@ -4,5 +4,4 @@ export { default as Maintenance } from "./Maintenance";
 
 // Utilities
 export * from "./utils/api";
-export * from "./utils/cookies";
 export * from "./utils/constants";
