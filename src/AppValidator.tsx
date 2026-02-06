@@ -1,4 +1,3 @@
-// AppValidator.tsx (updated)
 "use client";
 import Maintenance from "./Maintenance";
 import { useEffect, useState } from "react";
@@ -8,6 +7,7 @@ import { setValidationCookie, getValidationCookie } from "./utils/cookies";
 interface AppValidatorProps {
   appId: string;
   appName?: string;
+  isDev: boolean;
   apiEndpoint?: string;
   children: React.ReactNode;
 }
@@ -53,6 +53,7 @@ export default function AppValidator({
   appName,
   apiEndpoint,
   children,
+  isDev,
 }: AppValidatorProps) {
   const [status, setStatus] = useState<"LOADING" | "OK" | "MAINTENANCE">(
     "LOADING",
@@ -68,6 +69,11 @@ export default function AppValidator({
       const cached = getValidationCookie(COOKIE_NAME, appId);
 
       if (cached === "OK") {
+        setStatus("OK");
+        return;
+      }
+
+      if (isDev) {
         setStatus("OK");
         return;
       }

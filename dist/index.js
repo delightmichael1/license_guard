@@ -1751,26 +1751,74 @@ async function validateApp(appId, apiEndpoint) {
     return { status: "MAINTENANCE", message: "Network error" };
   }
 }
-function setValidationCookie(name, value, hours = 24) {
+
+// src/utils/crypto.ts
+function stringToBytes(str) {
+  return Array.from(str).map((char) => char.charCodeAt(0));
+}
+function bytesToString(bytes) {
+  return bytes.map((byte) => String.fromCharCode(byte)).join("");
+}
+function generateKey(appId) {
+  const hash = Array.from(appId).reduce((acc, char) => {
+    return (acc << 5) - acc + char.charCodeAt(0) | 0;
+  }, 0);
+  const key = [];
+  let seed = Math.abs(hash);
+  for (let i = 0; i < 16; i++) {
+    seed = (seed * 9301 + 49297) % 233280;
+    key.push(seed % 256);
+  }
+  return key;
+}
+function encrypt(value, appId) {
+  try {
+    const key = generateKey(appId);
+    const valueBytes = stringToBytes(value);
+    const encrypted = [];
+    for (let i = 0; i < valueBytes.length; i++) {
+      encrypted.push(valueBytes[i] ^ key[i % key.length]);
+    }
+    return btoa(bytesToString(encrypted));
+  } catch (err) {
+    console.error("Encryption failed", err);
+    return value;
+  }
+}
+function decrypt(encryptedValue, appId) {
+  try {
+    const key = generateKey(appId);
+    const decoded = atob(encryptedValue);
+    const encryptedBytes = stringToBytes(decoded);
+    const decrypted = [];
+    for (let i = 0; i < encryptedBytes.length; i++) {
+      decrypted.push(encryptedBytes[i] ^ key[i % key.length]);
+    }
+    return bytesToString(decrypted);
+  } catch (err) {
+    console.error("Decryption failed", err);
+    return null;
+  }
+}
+
+// src/utils/cookies.ts
+function setValidationCookie(name, value, hours = 24, appId) {
   const expires = /* @__PURE__ */ new Date();
   expires.setHours(expires.getHours() + hours);
-  document.cookie = cookie__namespace.serialize(name, value, {
+  const encryptedValue = encrypt(value, appId);
+  document.cookie = cookie__namespace.serialize(name, encryptedValue, {
     path: "/",
     expires,
     sameSite: "lax",
     secure: typeof window !== "undefined" && window.location.protocol === "https:"
   });
 }
-function getValidationCookie(name) {
+function getValidationCookie(name, appId) {
   if (typeof document === "undefined") return null;
   const cookies = cookie__namespace.parse(document.cookie || "");
-  return cookies[name] || null;
-}
-function deleteValidationCookie(name) {
-  document.cookie = cookie__namespace.serialize(name, "", {
-    path: "/",
-    expires: /* @__PURE__ */ new Date(0)
-  });
+  const encryptedValue = cookies[name];
+  if (!encryptedValue) return null;
+  return decrypt(encryptedValue, appId);
 }
 var loadingStyles = {
   container: {
@@ -1818,7 +1866,7 @@ function AppValidator({
   const COOKIE_LIFETIME_HOURS = 24;
   react.useEffect(() => {
     async function checkApp() {
-      const cached = getValidationCookie(COOKIE_NAME);
+      const cached = getValidationCookie(COOKIE_NAME, appId);
       if (cached === "OK") {
         setStatus("OK");
         return;
@@ -1827,7 +1875,7 @@ function AppValidator({
       if (res.status === "OK") {
         setStatus("OK");
         setMessage(void 0);
-        setValidationCookie(COOKIE_NAME, "OK", COOKIE_LIFETIME_HOURS);
+        setValidationCookie(COOKIE_NAME, "OK", COOKIE_LIFETIME_HOURS, appId);
       } else {
         if (cached === "OK") {
           setStatus("OK");
@@ -1838,7 +1886,8 @@ function AppValidator({
           setValidationCookie(
             COOKIE_NAME,
             "MAINTENANCE",
-            COOKIE_LIFETIME_HOURS
+            COOKIE_LIFETIME_HOURS,
+            appId
           );
         }
       }
@@ -1856,9 +1905,6 @@ exports.AppValidator = AppValidator;
 exports.DEFAULT_API_ENDPOINT = DEFAULT_API_ENDPOINT;
 exports.Maintenance = Maintenance;
 exports.OFFLINE_GRACE_PERIOD = OFFLINE_GRACE_PERIOD;
-exports.deleteValidationCookie = deleteValidationCookie;
-exports.getValidationCookie = getValidationCookie;
-exports.setValidationCookie = setValidationCookie;
 exports.validateApp = validateApp;
 //# sourceMappingURL=index.js.map
 //# sourceMappingURL=index.js.map

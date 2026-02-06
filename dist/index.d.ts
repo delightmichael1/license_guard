@@ -20,11 +20,7 @@ interface ValidationResponse {
 }
 declare function validateApp(appId: string, apiEndpoint?: string): Promise<ValidationResponse>;
 
-declare function setValidationCookie(name: string, value: string, hours?: number): void;
-declare function getValidationCookie(name: string): string | null;
-declare function deleteValidationCookie(name: string): void;
-
 declare const OFFLINE_GRACE_PERIOD: number;
 declare const DEFAULT_API_ENDPOINT = "";
 
-export { AppValidator, DEFAULT_API_ENDPOINT, Maintenance, OFFLINE_GRACE_PERIOD, type ValidationResponse, deleteValidationCookie, getValidationCookie, setValidationCookie, validateApp };
+export { AppValidator, DEFAULT_API_ENDPOINT, Maintenance, OFFLINE_GRACE_PERIOD, type ValidationResponse, validateApp };
